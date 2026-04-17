@@ -392,7 +392,6 @@
 
     .window-body {
       display: grid;
-      grid-template-columns: 86px 1fr;
       min-height: 382px;
     }
 
@@ -967,6 +966,16 @@
       line-height: 1.65;
     }
 
+     .pricing-list div {
+      margin-left: -5px;
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      color: #edf2ff;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
     .pricing-list li::before {
       content: "✔";
       color: var(--green);
@@ -1167,7 +1176,7 @@
       </nav>
 
       <div class="nav-actions">
-        <a class="btn btn-secondary" href="#download">Baixar app</a>
+        <a class="btn btn-secondary" href="https://github.com/ThiagoWaishaupt/livegiftgame/releases/download/v1.0.0/LiveGiftGame-v1.0.0-Setup.exe">Baixar app</a>
         <a class="btn btn-primary" href="#planos">Comprar licença</a>
       </div>
     </div>
@@ -1191,11 +1200,7 @@
             <span class="chip">🚀 Integração com LivePix</span>
           </div>
 
-          <div class="hero-actions">
-            <a class="btn btn-download" href="SEU_LINK_DO_EXE_AQUI" id="download">⬇️ Baixar para Windows</a>
-            <a class="btn btn-primary" href="SEU_LINK_KIWIFY_PRO_AQUI">💎 Comprar Plano PRO</a>
-            <a class="btn btn-secondary" href="SEU_LINK_KIWIFY_BASICO_AQUI">✨ Ver Plano Básico</a>
-          </div>
+          
 
           <div class="hero-proof">
             <div class="proof-card">
@@ -1224,14 +1229,6 @@
             </div>
 
             <div class="window-body">
-              <div class="window-sidebar">
-                <div class="side-pill active"></div>
-                <div class="side-pill"></div>
-                <div class="side-pill"></div>
-                <div class="side-pill"></div>
-                <div class="side-pill"></div>
-              </div>
-
               <div class="window-main">
                 <div class="system-card">
                   <div class="system-top">
@@ -1243,20 +1240,7 @@
                   </div>
                 </div>
 
-                <div class="quick-grid">
-                  <div class="quick-card">
-                    <strong>Doações recebidas</strong>
-                    <small>Eventos sendo ativados conforme os valores configurados no app.</small>
-                  </div>
-                  <div class="quick-card">
-                    <strong>Servidor online</strong>
-                    <small>Mundo ativo, modpack aplicado e RCON preparado automaticamente.</small>
-                  </div>
-                  <div class="quick-card">
-                    <strong>Eventos prontos</strong>
-                    <small>Itens, efeitos, mobs, comandos e caos personalizados durante a live.</small>
-                  </div>
-                </div>
+                
 
                 <div class="donation-card">
                   <div class="donation-head">
@@ -1274,7 +1258,7 @@
                   </div>
 
                   <div class="donation-row">
-                    <div class="amount">R$ 5</div>
+                    <div class="amount">R$ 10</div>
                     <div>
                       <strong>Invocar mob</strong><br />
                       <small style="color: var(--muted)">Interação ao vivo pra gerar reação e clip.</small>
@@ -1283,10 +1267,18 @@
                   </div>
 
                   <div class="donation-row">
-                    <div class="amount">R$ 10</div>
+                    <div class="amount">R$ 20</div>
                     <div>
                       <strong>Aplicar efeito</strong><br />
                       <small style="color: var(--muted)">Mais caos e mais entretenimento pra live.</small>
+                    </div>
+                    <span class="badge">Executado</span>
+                  </div>
+                  <div class="donation-row">
+                    <div class="amount">R$ 50</div>
+                    <div>
+                      <strong>Comando Manual</strong><br />
+                      <small style="color: var(--muted)">Digite o seu próprio comando manualmente.</small>
                     </div>
                     <span class="badge">Executado</span>
                   </div>
@@ -1521,7 +1513,7 @@
             <h3>Comece rápido</h3>
             <p class="pricing-desc">Ideal para quem quer testar o app, validar a ideia na live e começar com uma estrutura mais simples.</p>
             <div class="price">
-              <strong>R$ XX</strong>
+              <strong>R$ 34,90</strong>
               <span>/ acesso</span>
             </div>
             <ul class="pricing-list">
@@ -1529,10 +1521,9 @@
               <li>Integração com LivePix</li>
               <li>Configuração de eventos</li>
               <li>Uso com servidor Minecraft Forge</li>
-              <li>Download do aplicativo para Windows</li>
+              <div>⚠️ Crie até 3 eventos simultâneos</div>
             </ul>
-            <a class="btn btn-secondary" href="SEU_LINK_KIWIFY_BASICO_AQUI">Comprar plano básico</a>
-            <div class="pricing-foot">Troque o valor e o link acima pelo seu checkout real da Kiwify.</div>
+            <a class="btn btn-secondary" href="https://pay.kiwify.com.br/KDk4oqE">Comprar plano básico</a>
           </article>
 
           <article class="pricing-card featured">
@@ -1540,18 +1531,17 @@
             <h3>Leve sua live mais longe</h3>
             <p class="pricing-desc">A opção ideal para quem quer a experiência mais completa e o máximo de potencial de interatividade durante a live.</p>
             <div class="price">
-              <strong>R$ XX</strong>
+              <strong>R$ 49,90</strong>
               <span>/ acesso</span>
             </div>
             <ul class="pricing-list">
               <li>Tudo do Básico</li>
               <li>Fluxo mais completo para uso recorrente</li>
               <li>Mais liberdade para setups avançados</li>
-              <li>Melhor opção para streamers que querem extrair o máximo do app</li>
               <li>Perfeito para quem pretende usar em várias lives</li>
+              <div>♾️ Crie infinitos eventos simultâneos</div>
             </ul>
-            <a class="btn btn-primary" href="SEU_LINK_KIWIFY_PRO_AQUI">Comprar plano PRO</a>
-            <div class="pricing-foot">Deixe esse como seu principal plano de venda, porque ele tende a converter melhor visualmente.</div>
+            <a class="btn btn-primary" href="https://pay.kiwify.com.br/MqqqIJs">Comprar plano PRO</a>
           </article>
         </div>
       </div>
@@ -1561,9 +1551,8 @@
       <div class="container">
         <div class="section-head">
           <div>
-            <h2 class="section-title">Perguntas que podem travar a compra — e que vale responder já.</h2>
+            <h2 class="section-title">FAQ — <br>Perguntas Frequentes</h2>
           </div>
-          <p class="section-copy">Quanto menos dúvida a pessoa tiver, maior a chance de clicar em comprar sem pensar duas vezes.</p>
         </div>
 
         <div class="faq">
@@ -1586,11 +1575,6 @@
             <summary>Tem suporte se eu tiver problema?</summary>
             <div class="faq-body">Sim. Você pode usar o contato informado nesta página para tirar dúvidas e resolver problemas relacionados à instalação ou ativação.</div>
           </details>
-
-          <details class="faq-item">
-            <summary>O download é feito por onde?</summary>
-            <div class="faq-body">O botão de download pode apontar para o seu executável hospedado no GitHub Releases. O ideal é manter esse link sempre atualizado para a versão mais recente do app.</div>
-          </details>
         </div>
 
         <div class="final-cta">
@@ -1603,9 +1587,9 @@
           </div>
 
           <div class="final-actions">
-            <a class="btn btn-download" href="SEU_LINK_DO_EXE_AQUI">⬇️ Baixar aplicativo</a>
-            <a class="btn btn-primary" href="SEU_LINK_KIWIFY_PRO_AQUI">💎 Comprar licença PRO</a>
-            <a class="btn btn-secondary" href="mailto:SEU_EMAIL_AQUI">📩 Falar com o suporte</a>
+            <a class="btn btn-download" href="https://github.com/ThiagoWaishaupt/livegiftgame/releases/download/v1.0.0/LiveGiftGame-v1.0.0-Setup.exe">⬇️ Baixar aplicativo</a>
+            <a class="btn btn-primary" href="https://pay.kiwify.com.br/MqqqIJs">💎 Comprar licença PRO</a>
+            <a class="btn btn-secondary" href="mailto:famosotwl@gmail.com?subject=Suporte%20Live%20Gift%20Game">📩 Falar com o suporte</a>
           </div>
         </div>
       </div>
