@@ -1,83 +1,1691 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Gift Game</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Gift Game — Minecraft + LivePix</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-2: #0a1024;
+      --panel: rgba(10, 16, 36, 0.72);
+      --panel-2: rgba(17, 28, 58, 0.72);
+      --line: rgba(120, 146, 255, 0.18);
+      --text: #f4f7ff;
+      --muted: #a5b2d6;
+      --cyan: #28e7f5;
+      --blue: #4f7cff;
+      --purple: #935dff;
+      --green: #2ce69b;
+      --danger: #ff6684;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(79, 124, 255, 0.16), transparent 26%),
+        radial-gradient(circle at 80% 0%, rgba(147, 93, 255, 0.16), transparent 28%),
+        radial-gradient(circle at 70% 70%, rgba(40, 231, 245, 0.08), transparent 22%),
+        linear-gradient(180deg, #030613 0%, #060b18 38%, #050816 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { width: min(var(--max), calc(100% - 32px)); margin: 0 auto; }
+
+    .bg-grid,
+    .bg-orb,
+    .bg-orb-2,
+    .bg-noise {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+    }
+
+    .bg-grid {
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(circle at center, rgba(0,0,0,0.95), rgba(0,0,0,0.25));
+      opacity: 0.4;
+    }
+
+    .bg-orb,
+    .bg-orb-2 {
+      filter: blur(80px);
+      z-index: -3;
+    }
+
+    .bg-orb::before,
+    .bg-orb-2::before {
+      content: "";
+      position: absolute;
+      width: 34vw;
+      height: 34vw;
+      min-width: 320px;
+      min-height: 320px;
+      border-radius: 999px;
+      animation: float 14s ease-in-out infinite;
+    }
+
+    .bg-orb::before {
+      top: -10%;
+      right: -8%;
+      background: rgba(79, 124, 255, 0.24);
+    }
+
+    .bg-orb-2::before {
+      bottom: 5%;
+      left: -8%;
+      background: rgba(147, 93, 255, 0.2);
+      animation-duration: 16s;
+    }
+
+    .bg-noise {
+      background-image: radial-gradient(rgba(255,255,255,0.04) 0.7px, transparent 0.7px);
+      background-size: 14px 14px;
+      opacity: 0.08;
+    }
+
+    @keyframes float {
+      0%,100% { transform: translate3d(0,0,0) scale(1); }
+      50% { transform: translate3d(-18px, 20px, 0) scale(1.06); }
+    }
+
+    .announcement {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(4, 8, 20, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .announcement-inner {
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      color: #d7e3ff;
+      font-size: 14px;
+      padding: 0 12px;
+    }
+
+    .announcement-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid rgba(44, 230, 155, 0.25);
+      background: rgba(44, 230, 155, 0.08);
+      color: #bdf9de;
+      border-radius: 999px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    header {
+      position: sticky;
+      top: 54px;
+      z-index: 40;
+      backdrop-filter: blur(18px);
+      background: rgba(5, 8, 22, 0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .nav {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(40,231,245,0.18), rgba(79,124,255,0.2));
+      border: 1px solid rgba(120, 146, 255, 0.18);
+      display: grid;
+      place-items: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), var(--shadow);
+      font-size: 22px;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-size: 18px;
+      line-height: 1.05;
+    }
+
+    .brand-subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav-links a {
+      color: #cad6f8;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.86;
+    }
+
+    .nav-links a:hover { opacity: 1; }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease, opacity .18s ease;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      border-color: rgba(125, 142, 255, 0.35);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 18px 50px rgba(98, 108, 255, 0.35);
+    }
+
+    .btn-secondary {
+      color: #eaf0ff;
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(120, 146, 255, 0.25);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .btn-download {
+      color: #051814;
+      background: linear-gradient(135deg, #2ce69b, #54f2c2);
+      border-color: rgba(84, 242, 194, 0.35);
+    }
+
+    .btn-download:hover {
+      box-shadow: 0 18px 50px rgba(44, 230, 155, 0.28);
+    }
+
+    .hero {
+      padding: 72px 0 32px;
+    }
+
+    .hero-wrap {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(11, 18, 40, 0.88), rgba(8, 13, 31, 0.82));
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(79,124,255,0.08), transparent 40%, rgba(147,93,255,0.06));
+      pointer-events: none;
+    }
+
+    .hero-copy {
+      padding: 42px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 640px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      width: fit-content;
+      border: 1px solid rgba(40, 231, 245, 0.18);
+      background: rgba(40, 231, 245, 0.06);
+      color: #c5f9ff;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 5vw, 74px);
+      line-height: 0.94;
+      letter-spacing: -0.055em;
+      max-width: 11ch;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #ffffff 0%, #d7e6ff 35%, #9fb7ff 68%, #69f4ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-copy p {
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 640px;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #edf2ff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .hero-proof {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .proof-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 110px;
+    }
+
+    .proof-value {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+
+    .proof-label {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .hero-visual {
+      padding: 24px;
+      min-height: 640px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-content: center;
+    }
+
+    .app-window {
+      position: relative;
+      border-radius: 26px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(180deg, rgba(8, 12, 28, 0.95), rgba(4, 7, 18, 0.95));
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.46);
+      overflow: hidden;
+      min-height: 430px;
+    }
+
+    .window-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .window-dots { display: flex; gap: 8px; }
+    .window-dots span {
+      width: 10px; height: 10px; border-radius: 999px; display: block;
+      background: rgba(255,255,255,0.16);
+    }
+    .window-dots span:nth-child(1) { background: #ff6684; }
+    .window-dots span:nth-child(2) { background: #ffc857; }
+    .window-dots span:nth-child(3) { background: #2ce69b; }
+
+    .window-title {
+      color: #d9e5ff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .window-body {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      min-height: 382px;
+    }
+
+    .window-sidebar {
+      border-right: 1px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.02);
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .side-pill {
+      height: 42px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .side-pill.active {
+      background: linear-gradient(135deg, rgba(79,124,255,0.24), rgba(147,93,255,0.22));
+      border-color: rgba(120, 146, 255, 0.18);
+    }
+
+    .window-main {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .system-card {
+      border-radius: 18px;
+      padding: 18px;
+      background: linear-gradient(135deg, rgba(79,124,255,0.14), rgba(147,93,255,0.08));
+      border: 1px solid rgba(120, 146, 255, 0.16);
+    }
+
+    .system-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .system-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(44, 230, 155, 0.1);
+      color: #c8ffe7;
+      border: 1px solid rgba(44, 230, 155, 0.18);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .system-status::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #2ce69b;
+      box-shadow: 0 0 14px rgba(44,230,155,0.8);
+    }
+
+    .system-card h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .system-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .quick-card {
+      min-height: 108px;
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .quick-card small {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .quick-card strong {
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .donation-card {
+      border-radius: 18px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(15, 28, 60, 0.92), rgba(6, 14, 32, 0.92));
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .donation-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .donation-row {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .donation-row:first-of-type { border-top: 0; }
+
+    .amount {
+      font-size: 14px;
+      font-weight: 900;
+      color: #8ef7c7;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 88px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(79,124,255,0.12);
+      color: #dbe7ff;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(79,124,255,0.18);
+    }
+
+    .floating-toast {
+      position: absolute;
+      right: 22px;
+      bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(8, 13, 29, 0.96);
+      border: 1px solid rgba(147, 93, 255, 0.22);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+
+    .floating-toast strong { font-size: 13px; }
+    .floating-toast small { color: var(--muted); display: block; margin-top: 2px; }
+
+    @keyframes pulse {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .hero-below {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .mini-panel {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .mini-panel h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .mini-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .section {
+      padding: 44px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 3vw, 48px);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      margin: 0;
+      max-width: 14ch;
+    }
+
+    .section-copy {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.75;
+      max-width: 760px;
+      margin: 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .feature-card {
+      padding: 24px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(12, 20, 44, 0.84), rgba(8, 13, 29, 0.86));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+      min-height: 250px;
+    }
+
+    .feature-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: rgba(79,124,255,0.1);
+      border: 1px solid rgba(79,124,255,0.16);
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+
+    .feature-card h3 {
+      margin: 0 0 12px;
+      font-size: 22px;
+      letter-spacing: -0.04em;
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .feature-list li {
+      color: #d9e5ff;
+      font-size: 14px;
+      display: flex;
+      align-items: start;
+      gap: 10px;
+      line-height: 1.6;
+    }
+
+    .feature-list li::before {
+      content: "•";
+      color: var(--cyan);
+      font-weight: 900;
+      margin-top: -1px;
+    }
+
+    .showcase {
+      display: grid;
+      grid-template-columns: 0.96fr 1.04fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .demo-card,
+    .steps-card,
+    .testimonial-card,
+    .pricing-card,
+    .faq-item,
+    .final-cta {
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(12, 20, 44, 0.84), rgba(8, 13, 29, 0.86));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: var(--shadow);
+    }
+
+    .demo-card {
+      padding: 18px;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .demo-video {
+      flex: 1;
+      border-radius: 22px;
+      border: 1px dashed rgba(120, 146, 255, 0.22);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(79,124,255,0.18), transparent 30%),
+        radial-gradient(circle at 80% 20%, rgba(147,93,255,0.18), transparent 30%),
+        linear-gradient(180deg, rgba(8,13,30,0.95), rgba(4,7,18,0.96));
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 28px;
+    }
+
+    .play {
+      width: 84px;
+      height: 84px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(79,124,255,0.18), rgba(147,93,255,0.18));
+      border: 1px solid rgba(120,146,255,0.24);
+      font-size: 30px;
+      margin: 0 auto 18px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .demo-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .demo-stat {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .demo-stat strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+      letter-spacing: -0.03em;
+    }
+
+    .demo-stat span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .steps-card {
+      padding: 26px;
+      display: grid;
+      gap: 16px;
+      min-height: 520px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .step-index {
+      width: 54px;
+      height: 54px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(79,124,255,0.18), rgba(40,231,245,0.14));
+      border: 1px solid rgba(79,124,255,0.18);
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    .step h4 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .benefit-strip {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .benefit {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #eaf0ff;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .testimonial-card {
+      padding: 24px;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .quote {
+      color: #e7eeff;
+      font-size: 16px;
+      line-height: 1.85;
+      margin: 0 0 20px;
+    }
+
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(79,124,255,0.22), rgba(147,93,255,0.22));
+      border: 1px solid rgba(120,146,255,0.16);
+      font-weight: 900;
+    }
+
+    .author strong {
+      display: block;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .author span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .pricing {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .pricing-card {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pricing-card.featured {
+      border-color: rgba(147,93,255,0.22);
+      background: linear-gradient(180deg, rgba(20, 18, 44, 0.92), rgba(10, 12, 31, 0.9));
+    }
+
+    .pricing-card.featured::after {
+      content: "Mais escolhido";
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(147,93,255,0.16);
+      color: #eed8ff;
+      border: 1px solid rgba(147,93,255,0.22);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pricing-tier {
+      font-size: 13px;
+      font-weight: 800;
+      color: #c8d6ff;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .pricing-card h3 {
+      margin: 0;
+      font-size: 34px;
+      letter-spacing: -0.05em;
+    }
+
+    .pricing-desc {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 22px 0 18px;
+    }
+
+    .price strong {
+      font-size: clamp(42px, 5vw, 64px);
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .price span {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .pricing-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 28px;
+      display: grid;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .pricing-list li {
+      display: flex;
+      align-items: start;
+      gap: 12px;
+      color: #edf2ff;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .pricing-list li::before {
+      content: "✔";
+      color: var(--green);
+      font-weight: 900;
+      margin-top: 1px;
+    }
+
+    .pricing-foot {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 12px;
+    }
+
+    .faq {
+      display: grid;
+      gap: 14px;
+    }
+
+    details.faq-item {
+      padding: 0 22px;
+      overflow: hidden;
+    }
+
+    details.faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    details.faq-item summary::-webkit-details-marker { display: none; }
+
+    details.faq-item summary::after {
+      content: "+";
+      font-size: 26px;
+      color: #c7d5ff;
+      transition: transform .18s ease;
+      flex-shrink: 0;
+    }
+
+    details[open].faq-item summary::after {
+      transform: rotate(45deg);
+    }
+
+    .faq-body {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.8;
+      padding: 0 0 20px;
+      max-width: 900px;
+    }
+
+    .final-cta {
+      margin-top: 18px;
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: center;
+      background:
+        radial-gradient(circle at right top, rgba(147,93,255,0.16), transparent 30%),
+        radial-gradient(circle at left bottom, rgba(40,231,245,0.1), transparent 34%),
+        linear-gradient(180deg, rgba(13, 21, 48, 0.94), rgba(7, 11, 24, 0.94));
+    }
+
+    .final-cta h2 {
+      margin: 0 0 12px;
+      font-size: clamp(32px, 3vw, 52px);
+      line-height: 0.96;
+      letter-spacing: -0.05em;
+      max-width: 12ch;
+    }
+
+    .final-cta p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.8;
+      max-width: 680px;
+    }
+
+    .final-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    footer {
+      padding: 34px 0 54px;
+    }
+
+    .footer-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a:hover { color: #eef3ff; }
+
+    @media (max-width: 1100px) {
+      .hero-wrap,
+      .showcase,
+      .final-cta,
+      .pricing {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .hero-visual { min-height: auto; }
+
+      .feature-grid,
+      .testimonials,
+      .benefit-strip,
+      .hero-proof,
+      .quick-grid,
+      .demo-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-below { grid-template-columns: 1fr; }
+      .nav { align-items: flex-start; padding: 16px 0; }
+    }
+
+    @media (max-width: 760px) {
+      .announcement-inner { justify-content: flex-start; overflow-x: auto; }
+      header { top: 54px; }
+      .nav, .nav-links, .nav-actions { gap: 10px; }
+      .nav { flex-direction: column; }
+      .hero { padding-top: 34px; }
+      .hero-copy, .hero-visual, .feature-card, .pricing-card, .demo-card, .steps-card, .final-cta { padding: 22px; }
+      .feature-grid,
+      .testimonials,
+      .benefit-strip,
+      .hero-proof,
+      .quick-grid,
+      .demo-meta { grid-template-columns: 1fr; }
+      .window-body { grid-template-columns: 1fr; }
+      .window-sidebar { display: none; }
+      h1 { max-width: 100%; }
+      .section-copy { font-size: 16px; }
+      .hero-copy p { font-size: 16px; }
+      .final-actions { width: 100%; }
+      .btn { width: 100%; }
+      .hero-actions .btn { width: auto; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .btn { width: 100%; }
+      .floating-toast { position: static; margin-top: 14px; }
+      .donation-row { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-<body class="bg-black text-white">
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb-2"></div>
+  <div class="bg-noise"></div>
 
-  <!-- HERO -->
-  <section class="min-h-screen flex flex-col justify-center items-center text-center px-6">
-    <h1 class="text-4xl md:text-6xl font-bold mb-4">
-      Transforme sua live em um CAOS interativo 🔥
-    </h1>
-
-    <p class="text-lg md:text-xl text-gray-300 max-w-2xl mb-8">
-      Doações viram eventos dentro do Minecraft: mobs, itens, efeitos e muito mais.
-    </p>
-
-    <div class="flex gap-4">
-      <a href="#download" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-2xl text-lg font-semibold">
-        Baixar agora
-      </a>
-      <a href="#comprar" class="bg-purple-500 hover:bg-purple-600 px-6 py-3 rounded-2xl text-lg font-semibold">
-        Comprar licença
-      </a>
+  <div class="announcement">
+    <div class="container announcement-inner">
+      <span class="announcement-badge">🔥 Compatível com Minecraft Forge + modpacks</span>
+      <span>Receba doações na LivePix e transforme cada live em um caos interativo dentro do Minecraft.</span>
     </div>
-  </section>
+  </div>
 
-  <!-- FEATURES -->
-  <section class="py-20 px-6 bg-gray-900">
-    <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-8 text-center">
+  <header>
+    <div class="container nav">
+      <a href="#top" class="brand">
+        <div class="brand-mark">🎮</div>
+        <div class="brand-text">
+          <div class="brand-title">Live Gift Game</div>
+          <div class="brand-subtitle">Minecraft + LivePix em tempo real</div>
+        </div>
+      </a>
 
-      <div class="p-6 bg-black rounded-2xl shadow-lg">
-        <h3 class="text-xl font-bold mb-2">⚡ Tempo real</h3>
-        <p class="text-gray-400">Eventos ativados instantaneamente com as doações</p>
+      <nav class="nav-links">
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#planos">Licença</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="#download">Baixar app</a>
+        <a class="btn btn-primary" href="#planos">Comprar licença</a>
       </div>
-
-      <div class="p-6 bg-black rounded-2xl shadow-lg">
-        <h3 class="text-xl font-bold mb-2">🧩 Suporte a mods</h3>
-        <p class="text-gray-400">Funciona com modpacks Forge sem dor de cabeça</p>
-      </div>
-
-      <div class="p-6 bg-black rounded-2xl shadow-lg">
-        <h3 class="text-xl font-bold mb-2">🎮 Fácil de usar</h3>
-        <p class="text-gray-400">Interface simples pra streamers configurarem rápido</p>
-      </div>
-
     </div>
-  </section>
+  </header>
 
-  <!-- DOWNLOAD -->
-  <section id="download" class="py-20 text-center px-6">
-    <h2 class="text-3xl font-bold mb-4">Baixar o aplicativo</h2>
-    <p class="text-gray-400 mb-6">Disponível para Windows</p>
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-wrap">
+        <div class="glass hero-copy">
+          <span class="eyebrow">⚡ Sua live vira gameplay interativa de verdade</span>
+          <h1><span class="gradient-text">Transforme sua live em um caos interativo</span> dentro do Minecraft.</h1>
+          <p>
+            Com o Live Gift Game, doações via LivePix ativam eventos automaticamente no seu servidor:
+            mobs, itens, efeitos, comandos e muito mais. Mais reação, mais clips, mais retenção e mais potencial de monetização pra sua live.
+          </p>
 
-    <a href="SEU_LINK_DO_EXE_AQUI" class="bg-green-500 hover:bg-green-600 px-8 py-4 rounded-2xl text-xl font-bold">
-      Download .exe
-    </a>
+          <div class="hero-points">
+            <span class="chip">🧩 Compatível com mods</span>
+            <span class="chip">⚙️ Configuração guiada</span>
+            <span class="chip">🎥 Ideal pra lives e cortes</span>
+            <span class="chip">🚀 Integração com LivePix</span>
+          </div>
 
-    <p class="text-gray-500 mt-4 text-sm">
-      ⚠️ Baixe apenas o arquivo .exe
-    </p>
-  </section>
+          <div class="hero-actions">
+            <a class="btn btn-download" href="SEU_LINK_DO_EXE_AQUI" id="download">⬇️ Baixar para Windows</a>
+            <a class="btn btn-primary" href="SEU_LINK_KIWIFY_PRO_AQUI">💎 Comprar Plano PRO</a>
+            <a class="btn btn-secondary" href="SEU_LINK_KIWIFY_BASICO_AQUI">✨ Ver Plano Básico</a>
+          </div>
 
-  <!-- CTA -->
-  <section id="comprar" class="py-20 bg-purple-600 text-center px-6">
-    <h2 class="text-3xl font-bold mb-4">Quer liberar tudo?</h2>
-    <p class="mb-6">Adquira sua licença e comece a usar agora</p>
+          <div class="hero-proof">
+            <div class="proof-card">
+              <div class="proof-value">Ao vivo</div>
+              <div class="proof-label">Eventos acionados em tempo real com base nas doações da sua live.</div>
+            </div>
+            <div class="proof-card">
+              <div class="proof-value">Forge</div>
+              <div class="proof-label">Fluxo pensado para servidor Forge com suporte a modpacks e mundos configuráveis.</div>
+            </div>
+            <div class="proof-card">
+              <div class="proof-value">Fácil</div>
+              <div class="proof-label">Instala, ativa a licença, aponta a pasta do servidor e já começa a usar.</div>
+            </div>
+          </div>
+        </div>
 
-    <a href="SEU_LINK_KIWIFY_AQUI" class="bg-black hover:bg-gray-800 px-8 py-4 rounded-2xl text-xl font-bold">
-      Comprar licença
-    </a>
-  </section>
+        <div class="glass hero-visual">
+          <div class="app-window">
+            <div class="window-top">
+              <div class="window-dots">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="window-title">Live Gift Game — painel do sistema</div>
+              <div class="window-title">Windows</div>
+            </div>
 
-  <!-- FOOTER -->
-  <footer class="py-10 text-center text-gray-500 text-sm">
-    © 2026 Live Gift Game
+            <div class="window-body">
+              <div class="window-sidebar">
+                <div class="side-pill active"></div>
+                <div class="side-pill"></div>
+                <div class="side-pill"></div>
+                <div class="side-pill"></div>
+                <div class="side-pill"></div>
+              </div>
+
+              <div class="window-main">
+                <div class="system-card">
+                  <div class="system-top">
+                    <div>
+                      <h3>Sistema online</h3>
+                      <p>Webhook conectado, servidor Forge ativo e pronto para receber caos ao vivo.</p>
+                    </div>
+                    <span class="system-status">Ao vivo</span>
+                  </div>
+                </div>
+
+                <div class="quick-grid">
+                  <div class="quick-card">
+                    <strong>Doações recebidas</strong>
+                    <small>Eventos sendo ativados conforme os valores configurados no app.</small>
+                  </div>
+                  <div class="quick-card">
+                    <strong>Servidor online</strong>
+                    <small>Mundo ativo, modpack aplicado e RCON preparado automaticamente.</small>
+                  </div>
+                  <div class="quick-card">
+                    <strong>Eventos prontos</strong>
+                    <small>Itens, efeitos, mobs, comandos e caos personalizados durante a live.</small>
+                  </div>
+                </div>
+
+                <div class="donation-card">
+                  <div class="donation-head">
+                    <strong>Atividade recente</strong>
+                    <span class="badge">LivePix</span>
+                  </div>
+
+                  <div class="donation-row">
+                    <div class="amount">R$ 2</div>
+                    <div>
+                      <strong>Dar item</strong><br />
+                      <small style="color: var(--muted)">Entrega automática de item no servidor.</small>
+                    </div>
+                    <span class="badge">Executado</span>
+                  </div>
+
+                  <div class="donation-row">
+                    <div class="amount">R$ 5</div>
+                    <div>
+                      <strong>Invocar mob</strong><br />
+                      <small style="color: var(--muted)">Interação ao vivo pra gerar reação e clip.</small>
+                    </div>
+                    <span class="badge">Executado</span>
+                  </div>
+
+                  <div class="donation-row">
+                    <div class="amount">R$ 10</div>
+                    <div>
+                      <strong>Aplicar efeito</strong><br />
+                      <small style="color: var(--muted)">Mais caos e mais entretenimento pra live.</small>
+                    </div>
+                    <span class="badge">Executado</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="floating-toast">
+              <div>⚡</div>
+              <div>
+                <strong>Evento executado</strong>
+                <small>R$ 5 → invocar mob no servidor</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-below">
+            <div class="mini-panel">
+              <h4>Perfeito para streamers</h4>
+              <p>Crie momentos absurdos durante a live e aumente as chances de reação, clip e compartilhamento.</p>
+            </div>
+            <div class="mini-panel">
+              <h4>Feito pra vender melhor</h4>
+              <p>Quanto mais interatividade você gera, mais valor o público percebe e maior tende a ser o engajamento da live.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="recursos">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">O que faz o Live Gift Game ser tão forte pra live?</h2>
+          </div>
+          <p class="section-copy">
+            Ele não é só um aplicativo que roda comando. Ele foi pensado para criar entretenimento ao vivo, facilitar sua configuração e transformar doação em reação dentro do jogo sem depender de gambiarra manual.
+          </p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon">🎁</div>
+            <h3>Eventos por valor</h3>
+            <p>Defina ações diferentes para cada faixa de doação e construa uma escalada de caos que deixa a live muito mais divertida.</p>
+            <ul class="feature-list">
+              <li>Dar item</li>
+              <li>Aplicar efeito</li>
+              <li>Invocar mobs</li>
+              <li>Executar comando manual</li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">🧩</div>
+            <h3>Compatível com modpacks</h3>
+            <p>Use seu mundo Vanilla ou trabalhe com modpacks Forge. O app já foi pensado para aplicar mods e organizar os mundos vinculados a cada pack.</p>
+            <ul class="feature-list">
+              <li>Suporte a múltiplos mundos</li>
+              <li>Vinculação de modpack por mundo</li>
+              <li>Teste de compatibilidade dos mods</li>
+              <li>Detecção de erros mais clara</li>
+            </ul>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">⚙️</div>
+            <h3>Configuração guiada</h3>
+            <p>O app ajuda desde a primeira abertura: licença, servidor, Java compatível, pasta do Forge, LivePix e muito mais.</p>
+            <ul class="feature-list">
+              <li>Onboarding visual</li>
+              <li>Download de Java compatível</li>
+              <li>Validação de caminhos e credenciais</li>
+              <li>Logs e mensagens amigáveis</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="como-funciona">
+      <div class="container showcase">
+        <div class="demo-card">
+          <div>
+            <span class="eyebrow">🎥 Demonstração</span>
+            <h2 class="section-title" style="max-width: 11ch; margin: 0 0 12px;">Mostre isso em ação e a venda fica muito mais fácil.</h2>
+            <p class="section-copy" style="max-width: 100%; margin-top: 0;">
+              Coloque aqui um vídeo curto, GIF ou gravação de tela mostrando uma doação chegando e o Minecraft reagindo na hora. Isso aumenta MUITO a confiança de quem está pensando em comprar.
+            </p>
+          </div>
+
+          <div class="demo-video">
+            <div>
+              <div class="play">▶</div>
+              <h3 style="margin: 0 0 10px; font-size: 26px; letter-spacing: -0.04em;">Adicione seu vídeo aqui</h3>
+              <p style="margin: 0; color: var(--muted); line-height: 1.8; max-width: 520px;">
+                Pode ser um vídeo do YouTube, um GIF da sua live ou uma gravação curta mostrando o app funcionando com doação real.
+              </p>
+            </div>
+          </div>
+
+          <div class="demo-meta">
+            <div class="demo-stat">
+              <strong>LivePix</strong>
+              <span>Integração para doações em tempo real.</span>
+            </div>
+            <div class="demo-stat">
+              <strong>Minecraft Forge</strong>
+              <span>Fluxo pensado para seu servidor local.</span>
+            </div>
+            <div class="demo-stat">
+              <strong>Windows</strong>
+              <span>Instalação simples por executável.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="steps-card">
+          <div>
+            <span class="eyebrow">🪄 Como começar</span>
+            <h2 class="section-title" style="max-width: 11ch; margin: 0 0 12px;">Do zero até a live rodando em poucos passos.</h2>
+            <p class="section-copy" style="max-width: 100%; margin-top: 0;">O processo foi pensado para ser direto, visual e sem etapa chata desnecessária.</p>
+          </div>
+
+          <div class="step">
+            <div class="step-index">1</div>
+            <div>
+              <h4>Baixe e instale</h4>
+              <p>Baixe o executável, instale no Windows e abra o app normalmente.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-index">2</div>
+            <div>
+              <h4>Ative sua licença</h4>
+              <p>Insira a licença recebida por e-mail logo na primeira abertura do aplicativo.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-index">3</div>
+            <div>
+              <h4>Configure seu servidor Forge</h4>
+              <p>Escolha a pasta do servidor. O app já verifica Java, arquivos iniciais e ajuda a preparar o ambiente.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-index">4</div>
+            <div>
+              <h4>Conecte a LivePix</h4>
+              <p>Preencha as credenciais, configure os eventos e comece a transformar doações em gameplay ao vivo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="benefit-strip">
+          <div class="benefit">🎯 Mais retenção na live</div>
+          <div class="benefit">😂 Mais reação e entretenimento</div>
+          <div class="benefit">✂️ Mais chance de virar corte</div>
+          <div class="benefit">💸 Mais valor percebido na doação</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Esse tipo de ferramenta aumenta o potencial da sua live.</h2>
+          </div>
+          <p class="section-copy">
+            O maior valor aqui não é só a automação. É criar momentos imprevisíveis, engraçados e memoráveis que fazem o público querer doar, reagir e compartilhar o que aconteceu.
+          </p>
+        </div>
+
+        <div class="testimonials">
+          <article class="testimonial-card">
+            <p class="quote">“Cada doação vira um momento de reação. Isso deixa a live muito mais viva e naturalmente gera mais clip.”</p>
+            <div class="author">
+              <div class="avatar">TW</div>
+              <div>
+                <strong>Ideal para streamers</strong>
+                <span>Mais interação, mais caos e mais entretenimento.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="testimonial-card">
+            <p class="quote">“O fato de poder usar mundo com modpack muda tudo. Dá pra criar experiências muito mais absurdas do que no Vanilla.”</p>
+            <div class="author">
+              <div class="avatar">MC</div>
+              <div>
+                <strong>Compatível com mods</strong>
+                <span>Forge, packs e mundos organizados no mesmo lugar.</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="testimonial-card">
+            <p class="quote">“A experiência de setup guiado ajuda demais. Quanto menos fricção no começo, maior a chance da pessoa realmente usar.”</p>
+            <div class="author">
+              <div class="avatar">LG</div>
+              <div>
+                <strong>Feito pra vender bem</strong>
+                <span>Menos suporte, mais ativação e mais confiança.</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="planos">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Escolha sua licença e comece a usar na sua próxima live.</h2>
+          </div>
+          <p class="section-copy">
+            Você pode começar pelo plano mais simples ou ir direto para a versão mais completa. O importante é tirar isso do papel e usar na live o quanto antes.
+          </p>
+        </div>
+
+        <div class="pricing">
+          <article class="pricing-card">
+            <div class="pricing-tier">Plano Básico</div>
+            <h3>Comece rápido</h3>
+            <p class="pricing-desc">Ideal para quem quer testar o app, validar a ideia na live e começar com uma estrutura mais simples.</p>
+            <div class="price">
+              <strong>R$ XX</strong>
+              <span>/ acesso</span>
+            </div>
+            <ul class="pricing-list">
+              <li>Ativação com licença</li>
+              <li>Integração com LivePix</li>
+              <li>Configuração de eventos</li>
+              <li>Uso com servidor Minecraft Forge</li>
+              <li>Download do aplicativo para Windows</li>
+            </ul>
+            <a class="btn btn-secondary" href="SEU_LINK_KIWIFY_BASICO_AQUI">Comprar plano básico</a>
+            <div class="pricing-foot">Troque o valor e o link acima pelo seu checkout real da Kiwify.</div>
+          </article>
+
+          <article class="pricing-card featured">
+            <div class="pricing-tier">Plano PRO</div>
+            <h3>Leve sua live mais longe</h3>
+            <p class="pricing-desc">A opção ideal para quem quer a experiência mais completa e o máximo de potencial de interatividade durante a live.</p>
+            <div class="price">
+              <strong>R$ XX</strong>
+              <span>/ acesso</span>
+            </div>
+            <ul class="pricing-list">
+              <li>Tudo do Básico</li>
+              <li>Fluxo mais completo para uso recorrente</li>
+              <li>Mais liberdade para setups avançados</li>
+              <li>Melhor opção para streamers que querem extrair o máximo do app</li>
+              <li>Perfeito para quem pretende usar em várias lives</li>
+            </ul>
+            <a class="btn btn-primary" href="SEU_LINK_KIWIFY_PRO_AQUI">Comprar plano PRO</a>
+            <div class="pricing-foot">Deixe esse como seu principal plano de venda, porque ele tende a converter melhor visualmente.</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Perguntas que podem travar a compra — e que vale responder já.</h2>
+          </div>
+          <p class="section-copy">Quanto menos dúvida a pessoa tiver, maior a chance de clicar em comprar sem pensar duas vezes.</p>
+        </div>
+
+        <div class="faq">
+          <details class="faq-item" open>
+            <summary>Esse app funciona com mods?</summary>
+            <div class="faq-body">Sim. O Live Gift Game foi pensado para uso com Minecraft Forge e suporta fluxo com modpacks. Isso te dá muito mais liberdade para criar interações mais divertidas e únicas nas lives.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary>Preciso saber programar para usar?</summary>
+            <div class="faq-body">Não. A proposta do app é justamente reduzir a parte chata da configuração. Você instala, ativa a licença, aponta a pasta do servidor, conecta a LivePix e configura os eventos de forma visual.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary>Recebo a licença como?</summary>
+            <div class="faq-body">Após a compra, a licença é enviada por e-mail. Depois é só abrir o app e colar a chave na tela de ativação.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary>Tem suporte se eu tiver problema?</summary>
+            <div class="faq-body">Sim. Você pode usar o contato informado nesta página para tirar dúvidas e resolver problemas relacionados à instalação ou ativação.</div>
+          </details>
+
+          <details class="faq-item">
+            <summary>O download é feito por onde?</summary>
+            <div class="faq-body">O botão de download pode apontar para o seu executável hospedado no GitHub Releases. O ideal é manter esse link sempre atualizado para a versão mais recente do app.</div>
+          </details>
+        </div>
+
+        <div class="final-cta">
+          <div>
+            <span class="eyebrow">🚀 Última chamada</span>
+            <h2>Se sua live precisa de mais reação, mais caos e mais momentos clipáveis, esse app foi feito pra isso.</h2>
+            <p>
+              Baixe o aplicativo, veja a interface, conheça o fluxo e garanta sua licença para começar a usar ainda hoje. Quanto antes isso estiver rodando, antes sua live começa a ganhar um diferencial real.
+            </p>
+          </div>
+
+          <div class="final-actions">
+            <a class="btn btn-download" href="SEU_LINK_DO_EXE_AQUI">⬇️ Baixar aplicativo</a>
+            <a class="btn btn-primary" href="SEU_LINK_KIWIFY_PRO_AQUI">💎 Comprar licença PRO</a>
+            <a class="btn btn-secondary" href="mailto:SEU_EMAIL_AQUI">📩 Falar com o suporte</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-wrap">
+      <div>
+        <strong>Live Gift Game</strong><br />
+        <span>Minecraft + LivePix para lives mais interativas.</span>
+      </div>
+      <div class="footer-links">
+        <a href="#top">Topo</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#planos">Planos</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
   </footer>
-
 </body>
 </html>
