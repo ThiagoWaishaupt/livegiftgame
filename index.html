@@ -1155,6 +1155,130 @@
       .floating-toast { position: static; margin-top: 14px; }
       .donation-row { grid-template-columns: 1fr; }
     }
+
+    /* ==========================
+       AJUSTES MOBILE DO HEADER
+       ========================== */
+
+    .brand img {
+      width: 46px !important;
+      height: 46px !important;
+      flex: 0 0 46px;
+      border-radius: 14px;
+      object-fit: contain;
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        width: min(100% - 24px, var(--max));
+      }
+
+      .announcement {
+        position: static;
+      }
+
+      .announcement-inner {
+        min-height: auto;
+        padding: 10px 0;
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        text-align: center;
+        overflow: visible;
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .announcement-badge {
+        white-space: normal;
+        justify-content: center;
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+
+      header {
+        top: 0;
+        background: rgba(5, 8, 22, 0.98);
+        backdrop-filter: blur(14px);
+      }
+
+      .nav {
+        min-height: auto;
+        padding: 12px 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .brand {
+        width: 100%;
+        justify-content: center;
+        text-align: left;
+        gap: 12px;
+      }
+
+      .brand img {
+        width: 42px !important;
+        height: 42px !important;
+        flex-basis: 42px;
+      }
+
+      .brand-title {
+        font-size: 17px;
+      }
+
+      .brand-subtitle {
+        font-size: 12px;
+      }
+
+      .nav-links {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+
+      .nav-links a {
+        padding: 9px 6px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.06);
+        font-size: 11px;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .nav-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .nav-actions .btn {
+        width: 100%;
+        min-height: 42px;
+        padding: 0 10px;
+        border-radius: 13px;
+        font-size: 12px;
+        box-shadow: none;
+      }
+
+      .hero {
+        padding-top: 24px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .nav-links {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .nav-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
   </style>
 </head>
 <body>
